@@ -1,0 +1,53 @@
+# =============================================================================
+# .gitignore — Deep Packet Analyzer
+# =============================================================================
+
+# ── CMake build directory ────────────────────────────────────────────────────
+build/
+out/
+cmake-build-*/
+
+# ── Compiled binaries ────────────────────────────────────────────────────────
+dpi_simple
+dpi_engine
+test_sni
+test_types
+*.exe
+*.out
+*.o
+*.a
+*.so
+*.dylib
+
+# ── CMake cache / generated files ────────────────────────────────────────────
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+Testing/
+
+# ── IDE / Editor ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Coverage / profiling ─────────────────────────────────────────────────────
+*.gcno
+*.gcda
+*.gcov
+coverage.info
+coverage/
+lcov.info
+
+# ── Logs / temp ──────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.pcap.filtered
