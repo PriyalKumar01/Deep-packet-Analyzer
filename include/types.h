@@ -173,4 +173,19 @@ struct DPIStats {
 
 } // namespace DPI
 
+// ============================================================================
+// std::hash specialisation for DPI::FiveTuple
+// Allows use of FiveTuple as a key in std::unordered_map/set without
+// explicitly specifying FiveTupleHash as a template argument, and makes
+// std::hash<FiveTuple> work directly in tests.
+// ============================================================================
+namespace std {
+template <>
+struct hash<DPI::FiveTuple> {
+    size_t operator()(const DPI::FiveTuple& t) const noexcept {
+        return DPI::FiveTupleHash{}(t);
+    }
+};
+} // namespace std
+
 #endif // DPI_TYPES_H
