@@ -1,5 +1,6 @@
 # DPI Engine - Deep Packet Inspection System
 
+![Build Status](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake.yml/badge.svg) 
 
 This document explains **everything** about this project - from basic networking concepts to the complete code architecture. After reading this, you should understand exactly how packets flow through the system without needing to read the code.
 
@@ -18,7 +19,8 @@ This document explains **everything** about this project - from basic networking
 9. [How Blocking Works](#9-how-blocking-works)
 10. [Building and Running](#10-building-and-running)
 11. [Understanding the Output](#11-understanding-the-output)
-
+12. [Extending the Project](#12-extending-the-project)
+13. [CI/CD Pipeline](#13-ci-cd-pipeline)
 ---
 
 ## 1. What is DPI?
@@ -1045,6 +1047,33 @@ python3 generate_test_pcap.py
    - Currently only client → server direction is tracked
    - Use `FiveTuple::reverse()` to match server → client packets to the same flow
 
+---
+## 13. CI/CD Pipeline
+
+This project uses GitHub Actions for automated build validation.
+
+The workflow:
+
+- Triggers on every push to main
+- Runs on Ubuntu latest
+- Configures the project using CMake
+- Builds in Release mode
+- Fails if compilation errors occur
+
+Why this matters:
+
+- Ensures clean builds on a fresh environment
+- Prevents broken commits
+- Maintains production-level reliability
+- Prepares the project for scaling and collaboration
+
+Future improvements:
+
+- Add unit testing with CTest
+- Add static analysis (clang-tidy)
+- Add multi-platform build matrix (Windows/macOS)
+- Add code coverage reporting
+  
 ---
 
 ## Summary
