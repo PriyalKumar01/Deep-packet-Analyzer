@@ -1,6 +1,28 @@
 # DPI Engine - Deep Packet Inspection System
 
-![Build Status](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake.yml/badge.svg) 
+[![CMake Build & Test](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake.yml/badge.svg)](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake.yml)
+[![CMake Single Platform](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake-single-platform.yml)
+![CTest](https://img.shields.io/badge/CTest-33%20tests%20passing-brightgreen?logo=cmake)
+![clang-tidy](https://img.shields.io/badge/clang--tidy-enabled-blue?logo=llvm)
+![C++17](https://img.shields.io/badge/C%2B%2B-17-blue?logo=cplusplus&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey?logo=linux)
+[![GitHub stars](https://img.shields.io/github/stars/PriyalKumar01/Deep-packet-Analyzer?style=social)](https://github.com/PriyalKumar01/Deep-packet-Analyzer/stargazers)
+![License](https://img.shields.io/github/license/PriyalKumar01/Deep-packet-Analyzer)
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| ![C++](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white) | Core engine — zero external dependencies |
+| ![CMake](https://img.shields.io/badge/CMake-3.16+-064F8C?logo=cmake&logoColor=white) | Cross-platform build system |
+| ![CTest](https://img.shields.io/badge/CTest-unit%20tests-brightgreen?logo=cmake) | 33 unit tests across 2 test suites |
+| ![LLVM](https://img.shields.io/badge/clang--tidy-static%20analysis-262D3A?logo=llvm&logoColor=white) | Static analysis & linting |
+| ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=githubactions&logoColor=white) | Automated pipeline (Ubuntu + macOS) |
+| ![Wireshark](https://img.shields.io/badge/PCAP-libpcap%20format-1679A7?logo=wireshark&logoColor=white) | PCAP reader (pure C++, no libpcap dep) |
+
+---
 
 This document explains **everything** about this project - from basic networking concepts to the complete code architecture. After reading this, you should understand exactly how packets flow through the system without needing to read the code.
 
@@ -20,7 +42,7 @@ This document explains **everything** about this project - from basic networking
 10. [Building and Running](#10-building-and-running)
 11. [Understanding the Output](#11-understanding-the-output)
 12. [Extending the Project](#12-extending-the-project)
-13. [CI/CD Pipeline](#13-ci-cd-pipeline)
+13. [CI/CD Pipeline](#13-cicd-pipeline)
 ---
 
 ## 1. What is DPI?
