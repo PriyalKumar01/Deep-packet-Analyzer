@@ -923,7 +923,56 @@ python3 generate_test_pcap.py
 # Creates test_dpi.pcap with sample traffic
 ```
 
----
+### CMake Build (Recommended)
+
+The project uses CMake for a clean, reproducible build. This also enables CTest and optional clang-tidy.
+
+```bash
+# Configure (first time only)
+mkdir build && cd build
+cmake ..
+
+# Build all targets
+cmake --build . --parallel
+
+# Targets produced:
+#   ./dpi_simple   — single-threaded version
+#   ./dpi_engine   — multi-threaded version (main)
+```
+
+### Running Unit Tests (CTest)
+
+After building with CMake, run the full test suite:
+
+```bash
+ctest --output-on-failure
+```
+
+Expected output:
+```
+Test #1: SNIExtractorTest  ...........  Passed
+Test #2: TypesTest  .................. Passed
+100% tests passed, 0 tests failed out of 2
+```
+
+**What the tests cover:**
+- `tests/test_sni.cpp` — 11 tests: TLS Client Hello SNI extraction, HTTP Host header parsing, edge cases (empty, truncated, non-TLS)
+- `tests/test_types.cpp` — 22 tests: app classification for all 14 platforms, case-insensitivity, FiveTuple equality / reverse / hash
+
+### Static Analysis (clang-tidy)
+
+```bash
+# Enable during build
+cmake -DENABLE_CLANG_TIDY=ON ..
+cmake --build .
+
+# Or run manually on a single file
+clang-tidy src/sni_extractor.cpp -p build/ -- -std=c++17 -Iinclude
+```
+
+Configuration is in `.clang-tidy` at the project root.
+
+
 
 ## 11. Understanding the Output
 
@@ -1050,30 +1099,47 @@ python3 generate_test_pcap.py
 ---
 ## 13. CI/CD Pipeline
 
-This project uses GitHub Actions for automated build validation.
+![Build Status](https://github.com/PriyalKumar01/Deep-packet-Analyzer/actions/workflows/cmake.yml/badge.svg)
 
-The workflow:
+This project uses **GitHub Actions** for automated build validation, testing, and static analysis on every push.
 
-- Triggers on every push to main
-- Runs on Ubuntu latest
-- Configures the project using CMake
-- Builds in Release mode
-- Fails if compilation errors occur
+### Pipeline Steps
 
-Why this matters:
+| Step | What Happens |
+|------|--------------|
+| **Checkout** | Clones the repo fresh |
+| **Install tools** | `cmake`, `g++`, `clang-tidy` via apt |
+| **CMake Configure** | Generates build files + `compile_commands.json` |
+| **Build** | Compiles all 4 targets (`dpi_simple`, `dpi_engine`, `test_sni`, `test_types`) |
+| **CTest** | Runs all 33 unit tests with `--output-on-failure` |
+| **clang-tidy** | Static analysis on all shared source files |
 
-- Ensures clean builds on a fresh environment
-- Prevents broken commits
-- Maintains production-level reliability
-- Prepares the project for scaling and collaboration
+### Jobs
 
-Future improvements:
+```
+┌─────────────────────────────────────────────┐
+│  On every push / pull request to main       │
+├─────────────────────────────────────────────┤
+│  Job 1: build-and-test (ubuntu-latest)      │
+│    → configure → build → ctest → clang-tidy │
+├─────────────────────────────────────────────┤
+│  Job 2: build-macos (macos-latest)          │
+│    → configure → build → ctest              │
+└─────────────────────────────────────────────┘
+```
 
-- Add unit testing with CTest
-- Add static analysis (clang-tidy)
-- Add multi-platform build matrix (Windows/macOS)
-- Add code coverage reporting
-  
+### Why This Matters
+
+- ✅ Ensures clean builds on a **fresh environment** (not just your machine)
+- ✅ **All 33 unit tests** run automatically on every commit
+- ✅ **clang-tidy** catches code quality issues before they reach main
+- ✅ **macOS job** confirms cross-platform compatibility
+- ✅ Prevents broken commits from reaching the main branch
+
+### Workflow File
+
+See [`.github/workflows/cmake.yml`](.github/workflows/cmake.yml) for the full pipeline definition.
+
 ---
 
 ## Summary

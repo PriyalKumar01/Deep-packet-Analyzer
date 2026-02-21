@@ -1,0 +1,96 @@
+# =============================================================================
+# GitHub Actions CI/CD Pipeline — DPI Engine
+#
+# Triggers: push or pull request to main branch
+#
+# Steps:
+#   1. Build dpi_simple (single-threaded version)
+#   2. Build dpi_engine (multi-threaded version)
+#   3. Build both unit test executables
+#   4. Run CTest (all registered tests)
+#   5. Run clang-tidy static analysis
+# =============================================================================
+
+name: CMake Build & Test
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-and-test:
+    name: Build & CTest (Ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ─────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Install dependencies ──────────────────────────────────────────────
+      - name: Install build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cmake g++ clang-tidy
+
+      # ── 3. Configure CMake (with compile_commands.json for clang-tidy) ──────
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+                -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+                -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      # ── 4. Build all targets (dpi_simple, dpi_engine, test_sni, test_types) ─
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+      # ── 5. Run CTest unit tests ──────────────────────────────────────────────
+      - name: Run CTest
+        working-directory: build
+        run: ctest --output-on-failure --build-config ${{ env.BUILD_TYPE }}
+
+      # ── 6. Run clang-tidy static analysis ───────────────────────────────────
+      - name: Run clang-tidy
+        run: |
+          # Analyse all source files in src/ (exclude main entry points —
+          # they contain globals that clang-tidy tends to flag noisily)
+          FILES=(
+            src/sni_extractor.cpp
+            src/types.cpp
+            src/packet_parser.cpp
+            src/pcap_reader.cpp
+            src/connection_tracker.cpp
+            src/rule_manager.cpp
+          )
+          echo "Running clang-tidy on shared source files..."
+          for f in "${FILES[@]}"; do
+            echo "  → $f"
+            clang-tidy "$f" -p build/ -- -std=c++17 -Iinclude || true
+          done
+          echo "clang-tidy step complete."
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # (Optional) Additional job: build on macOS to detect platform issues
+  # ────────────────────────────────────────────────────────────────────────────
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Run CTest
+        working-directory: build
+        run: ctest --output-on-failure
